@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Telegram Arcade</title>
+  <!-- SDK Oficial de Telegram Web App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1 id="user-greeting">¡Hola, Jugador!</h1>
+    <p>Monedas: <span id="coins-count">0</span> 🪙</p>
+  </header>
+
+  <!-- MENÚ PRINCIPAL -->
+  <main id="main-menu" class="screen">
+    <h2>Selecciona un Juego</h2>
+    <button class="btn" onclick="showGame('memory')">🧠 Juego de Memoria</button>
+    <button class="btn" onclick="showGame('snake')">🐍 Juego de Snake</button>
+  </main>
+
+  <!-- JUEGO DE MEMORIA -->
+  <section id="memory-game" class="screen hidden">
+    <button class="back-btn" onclick="showMenu()">← Volver al Menú</button>
+    <h2>Juego de Memoria</h2>
+    <div id="memory-board" class="memory-board"></div>
+  </section>
+
+  <!-- JUEGO DE SNAKE -->
+  <section id="snake-game" class="screen hidden">
+    <button class="back-btn" onclick="showMenu()">← Volver al Menú</button>
+    <h2>Snake</h2>
+    <canvas id="snake-canvas" width="300" height="300"></canvas>
+    <div class="controls">
+      <button onclick="changeDirection('UP')">⬆️</button>
+      <div>
+        <button onclick="changeDirection('LEFT')">⬅️</button>
+        <button onclick="changeDirection('RIGHT')">➡️</button>
+      </div>
+      <button onclick="changeDirection('DOWN')">⬇️</button>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
