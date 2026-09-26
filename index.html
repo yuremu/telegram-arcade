@@ -17,6 +17,16 @@
 
   <!-- MENÚ PRINCIPAL -->
   <main id="main-menu" class="screen">
+    <!-- WIDGET RECOMPENSA DIARIA -->
+    <div class="daily-card">
+      <h3>🎁 Recompensa Diaria</h3>
+      <p id="streak-text">Racha actual: 0 días</p>
+      <button id="daily-btn" class="btn daily-btn" onclick="claimDailyReward()">
+        Reclamar Recompensa
+      </button>
+      <small id="timer-text" class="timer-text"></small>
+    </div>
+
     <h2>Selecciona un Juego</h2>
     <button class="btn" onclick="showGame('memory')">🧠 Juego de Memoria</button>
     <button class="btn" onclick="showGame('snake')">🐍 Juego de Snake</button>

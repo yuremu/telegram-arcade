@@ -92,3 +92,40 @@ header {
   border: none;
   border-radius: 5px;
 }
+
+/* Tarjeta de Recompensa Diaria */
+.daily-card {
+  background: linear-gradient(135deg, #2b394a 0%, #1e2936 100%);
+  border: 2px solid #f39c12;
+  border-radius: 12px;
+  padding: 15px;
+  width: 90%;
+  max-width: 320px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.daily-card h3 {
+  color: #f1c40f;
+  margin-bottom: 5px;
+}
+
+.daily-btn {
+  background-color: #f39c12;
+  color: #1c2733;
+  font-weight: bold;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.daily-btn:disabled {
+  background-color: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.timer-text {
+  display: block;
+  margin-top: 8px;
+  color: #bdc3c7;
+  font-size: 12px;
+}
