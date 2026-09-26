@@ -1,3 +1,53 @@
+// Variable global para guardar la información del jugador
+let player = {
+  id: null,
+  firstName: 'Invitado',
+  username: '',
+  language: 'es'
+};
+
+// Inicializar el SDK de Telegram
+function initTelegramUser() {
+  const tg = window.Telegram?.WebApp;
+
+  if (tg) {
+    // Expandir la app a pantalla completa
+    tg.expand();
+    tg.ready();
+
+    // Obtener los datos del usuario enviados por Telegram
+    const userData = tg.initDataUnsafe?.user;
+
+    if (userData) {
+      player.id = userData.id;
+      player.firstName = userData.first_name || 'Jugador';
+      player.username = userData.username || '';
+      player.language = userData.language_code || 'es';
+
+      console.log('✅ Usuario detectado en Telegram:', player);
+
+      // Mostrar saludo e información en la interfaz
+      document.getElementById('user-greeting').innerText = `¡Hola, ${player.firstName}!`;
+      
+      // Mostrar el ID en la interfaz si lo deseas para depuración
+      const userInfoEl = document.getElementById('user-info');
+      if (userInfoEl) {
+        userInfoEl.innerText = `ID: ${player.id}`;
+      }
+    } else {
+      console.warn('⚠️ Se ejecutó fuera de Telegram o en modo prueba local.');
+      document.getElementById('user-greeting').innerText = '¡Hola, Invitado!';
+    }
+  } else {
+    console.error('❌ El SDK de Telegram WebApp no está cargado.');
+  }
+}
+
+// Llamar a la función al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  initTelegramUser();
+});
+
 // Inicializar Telegram WebApp
 const tg = window.Telegram?.WebApp;
 if (tg) {
