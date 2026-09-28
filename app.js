@@ -1,7 +1,7 @@
-import { AdController } from '@adsgram/ai'; // Descomenta si usas NPM
-
 // 🌐 Configuración del Backend en Render
 const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
+
+import { AdController } from '@adsgram/ai'; // Descomenta si usas NPM
 
 // Inicializar el controlador del anuncio recompensado
 const AdControllerInstance = window.Adsgram 
@@ -37,6 +37,7 @@ async function showRewardAd() {
 // Función simulada para acreditar las monedas en frontend o backend
 function addCoins(amount) {
   // Lógica para actualizar las monedas del usuario
+  addCoinsToBackend(amount);
   console.log(`+${amount} monedas acreditadas.`);
 }
 
