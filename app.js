@@ -1,5 +1,44 @@
+import { AdController } from '@adsgram/ai'; // Descomenta si usas NPM
+
 // 🌐 Configuración del Backend en Render
 const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
+
+// Inicializar el controlador del anuncio recompensado
+const AdControllerInstance = window.Adsgram 
+  ? window.Adsgram.init({ blockId: "50697" })
+  : AdController.init({ blockId: "50697" });
+
+async function showRewardAd() {
+  const adButton = document.getElementById("watch-ad-btn");
+  adButton.disabled = true;
+
+  try {
+    const result = await AdControllerInstance.show();
+    
+    // Si el anuncio fue visto completamente (Reward otorgado)
+    if (result.done) {
+      addCoins(50);
+      alert("¡Felicidades! Has ganado +50 monedas.");
+    }
+  } catch (error) {
+    // Manejo de eventos según respuesta de Adsgram
+    if (error.error === "banner_not_found" || error.error === "no_ads") {
+      alert("No hay videos disponibles en este momento. Intenta más tarde.");
+    } else if (error.error === "user_closed") {
+      alert("Cerraste el video antes de finalizar. No se acreditaron las monedas.");
+    } else {
+      console.error("Error al mostrar el anuncio:", error);
+    }
+  } finally {
+    adButton.disabled = false;
+  }
+}
+
+// Función simulada para acreditar las monedas en frontend o backend
+function addCoins(amount) {
+  // Lógica para actualizar las monedas del usuario
+  console.log(`+${amount} monedas acreditadas.`);
+}
 
 // Variable global para almacenar el estado del jugador
 let player = {
