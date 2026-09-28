@@ -308,3 +308,29 @@ document.addEventListener('DOMContentLoaded', () => {
     checkDailyRewardStatus();
   }, 200);
 });
+
+const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com/'; // O la URL donde alojes tu backend (ej. Render o Railway)
+
+async function syncUserWithBackend() {
+  const tg = window.Telegram?.WebApp;
+  const initData = tg?.initData || '';
+  const user = tg?.initDataUnsafe?.user || { id: 9999, first_name: 'Invitado Local' };
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/user/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData, user })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      // Actualizar interfaz con datos reales guardados en la BD
+      coins = data.user.coins;
+      document.getElementById('coins-count').innerText = coins;
+      console.log('✅ Datos sincronizados con el Backend:', data.user);
+    }
+  } catch (error) {
+    console.error('❌ Error de conexión con el backend:', error);
+  }
+}
