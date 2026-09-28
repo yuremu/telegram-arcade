@@ -6,6 +6,7 @@
   <title>Telegram Arcade</title>
   <!-- SDK Oficial de Telegram Web App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://adsgram.ai/js/adsgram-ad-controller.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -30,6 +31,9 @@
     <h2>Selecciona un Juego</h2>
     <button class="btn" onclick="showGame('memory')">🧠 Juego de Memoria</button>
     <button class="btn" onclick="showGame('snake')">🐍 Juego de Snake</button>
+    <button id="watch-ad-btn" onclick="showRewardAd()" class="reward-btn">
+      🎬 Ver video para ganar +50 monedas
+    </button>
   </main>
 
   <!-- JUEGO DE MEMORIA -->
