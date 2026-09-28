@@ -1,8 +1,6 @@
 // 🌐 Configuración del Backend en Render
 const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
 
-import { AdController } from '@adsgram/ai'; // Descomenta si usas NPM
-
 // Inicializar el controlador del anuncio recompensado
 const AdControllerInstance = window.Adsgram 
   ? window.Adsgram.init({ blockId: "50697" })
