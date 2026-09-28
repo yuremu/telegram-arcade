@@ -1,45 +1,65 @@
 // 🌐 Configuración del Backend en Render
 const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
 
-import { AdController } from '@adsgram/ai'; // Descomenta si usas NPM
+/* ==========================================
+   INTEGRACIÓN DE ADSGRAM (ANUNCIOS RECOMPENSADOS)
+   ========================================== */
 
-// Inicializar el controlador del anuncio recompensado
-const AdControllerInstance = window.Adsgram 
-  ? window.Adsgram.init({ blockId: "50697" })
-  : AdController.init({ blockId: "50697" });
+// Reemplaza "YOUR_BLOCK_ID" por tu ID de bloque publicitario real de Adsgram
+const ADSGRAM_BLOCK_ID = "50697"; 
+
+let AdControllerInstance = null;
+
+// Inicializar el controlador cuando la página esté lista
+function initAdsgram() {
+  if (window.Adsgram) {
+    AdControllerInstance = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+    console.log("✅ SDK de Adsgram listo.");
+  } else {
+    console.warn("⚠️ SDK de Adsgram no detectado. Revisa la etiqueta script en index.html");
+  }
+}
 
 async function showRewardAd() {
   const adButton = document.getElementById("watch-ad-btn");
-  adButton.disabled = true;
+  if (adButton) adButton.disabled = true;
+
+  if (!AdControllerInstance) {
+    // Si no se ha inicializado o estamos en navegador de pruebas local
+    if (window.Adsgram) {
+      AdControllerInstance = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
+    } else {
+      alert("Anuncios no disponibles fuera de Telegram o SDK no cargado.");
+      if (adButton) adButton.disabled = false;
+      return;
+    }
+  }
 
   try {
     const result = await AdControllerInstance.show();
     
-    // Si el anuncio fue visto completamente (Reward otorgado)
+    // Si el usuario vio el video publicitario completo
     if (result.done) {
-      addCoins(50);
-      alert("¡Felicidades! Has ganado +50 monedas.");
+      alert("🎉 ¡Gracias por ver el anuncio! Ganaste +50 monedas.");
+      addCoinsToBackend(50); // Llama a nuestra función existente que guarda en Render
     }
   } catch (error) {
-    // Manejo de eventos según respuesta de Adsgram
     if (error.error === "banner_not_found" || error.error === "no_ads") {
-      alert("No hay videos disponibles en este momento. Intenta más tarde.");
+      alert("No hay anuncios disponibles en este momento. Intenta de nuevo más tarde.");
     } else if (error.error === "user_closed") {
-      alert("Cerraste el video antes de finalizar. No se acreditaron las monedas.");
+      alert("Cerraste el video antes de tiempo. No se otorgaron las monedas.");
     } else {
-      console.error("Error al mostrar el anuncio:", error);
+      console.error("Error al reproducir el anuncio:", error);
     }
   } finally {
-    adButton.disabled = false;
+    if (adButton) adButton.disabled = false;
   }
 }
 
-// Función simulada para acreditar las monedas en frontend o backend
-function addCoins(amount) {
-  // Lógica para actualizar las monedas del usuario
-  addCoinsToBackend(amount);
-  console.log(`+${amount} monedas acreditadas.`);
-}
+// Inicializar Adsgram junto al resto de eventos
+document.addEventListener('DOMContentLoaded', () => {
+  initAdsgram();
+});
 
 // Variable global para almacenar el estado del jugador
 let player = {
