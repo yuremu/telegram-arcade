@@ -266,3 +266,101 @@ function collision(head, array) {
 document.addEventListener('DOMContentLoaded', () => {
   initTelegramUser();
 });
+
+// Configuración de recompensas por día de racha (en monedas)
+const DAILY_REWARDS = [10, 20, 30, 50, 80, 120, 200];
+
+// Claves únicas utilizando el id de Telegram si está disponible
+function getStorageKey(keyName) {
+  const userId = player.id || 'guest';
+  return `${keyName}_${userId}`;
+}
+
+/* ==========================================
+   6. Recompensa diaria
+   ========================================== */
+
+// Inicializar y verificar el estado de la recompensa
+function checkDailyRewardStatus() {
+  const lastClaimStr = localStorage.getItem(getStorageKey('last_claim_date'));
+  const streak = parseInt(localStorage.getItem(getStorageKey('reward_streak')) || '0');
+  
+  const streakText = document.getElementById('streak-text');
+  const btn = document.getElementById('daily-btn');
+  const timerText = document.getElementById('timer-text');
+
+  streakText.innerText = `Racha actual: ${streak} día(s)`;
+
+  if (!lastClaimStr) {
+    // Primera vez que entra
+    btn.disabled = false;
+    btn.innerText = `Reclamar +${DAILY_REWARDS[0]} 🪙`;
+    timerText.innerText = '¡Tu primera recompensa está disponible!';
+    return;
+  }
+
+  const lastClaim = new Date(lastClaimStr);
+  const now = new Date();
+
+  // Comprobar si es el mismo día calendario
+  const isSameDay = lastClaim.toDateString() === now.toDateString();
+
+  if (isSameDay) {
+    // Ya reclamó hoy
+    btn.disabled = true;
+    btn.innerText = '¡Ya reclamaste hoy!';
+    timerText.innerText = 'Regresa mañana para tu siguiente premio.';
+  } else {
+    // Pasó más de un día, verificar si se mantiene la racha
+    const diffTime = Math.abs(now - lastClaim);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    let nextStreak = streak;
+    if (diffDays > 1) {
+      // Se rompió la racha por no entrar un día completo
+      nextStreak = 0;
+      localStorage.setItem(getStorageKey('reward_streak'), '0');
+    }
+
+    const rewardAmount = DAILY_REWARDS[Math.min(nextStreak, DAILY_REWARDS.length - 1)];
+    btn.disabled = false;
+    btn.innerText = `Reclamar +${rewardAmount} 🪙`;
+    timerText.innerText = '¡Recompensa disponible!';
+  }
+}
+
+// Función ejecutada al presionar el botón de reclamo
+function claimDailyReward() {
+  let streak = parseInt(localStorage.getItem(getStorageKey('reward_streak')) || '0');
+  
+  // Calcular premio
+  const rewardAmount = DAILY_REWARDS[Math.min(streak, DAILY_REWARDS.length - 1)];
+
+  // Otorgar monedas
+  addCoins(rewardAmount);
+
+  // Actualizar racha y fecha
+  streak += 1;
+  localStorage.setItem(getStorageKey('reward_streak'), streak.toString());
+  localStorage.setItem(getStorageKey('last_claim_date'), new Date().toISOString());
+
+  // Confirmar visualmente
+  const tg = window.Telegram?.WebApp;
+  if (tg?.HapticFeedback) {
+    // Vibración ligera en dispositivos móviles
+    tg.HapticFeedback.notificationOccurred('success');
+  }
+
+  alert(`🎉 ¡Has recibido ${rewardAmount} monedas!`);
+
+  // Actualizar estado del botón
+  checkDailyRewardStatus();
+}
+
+// Ejecutar la verificación al iniciar la app
+document.addEventListener('DOMContentLoaded', () => {
+  // Le damos un pequeño tiempo para asegurar que el id de Telegram se cargó primero
+  setTimeout(() => {
+    checkDailyRewardStatus();
+  }, 200);
+});
