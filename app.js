@@ -59,6 +59,7 @@ function switchTab(screenId, btnElement) {
 // 2. VERIFICACIÓN DE ADMINISTRADOR
 function setupUserInterface() {
   document.getElementById('user-name').innerText = currentUser.first_name || 'Usuario';
+  document.getElementById('user-id').innerText = currentUser.id || 'ID';
 
   // Verificar si es administrador
   if (ADMIN_IDS.includes(currentUser.id)) {
