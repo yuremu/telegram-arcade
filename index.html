@@ -3,61 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Telegram Arcade</title>
-  <!-- SDK Oficial de Telegram Web App -->
+  <title>Telegram Mini App</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- SDK Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- SDK Adsgram -->
   <script src="https://adsgram.ai/js/adsgram-ad-controller.js"></script>
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1 id="user-greeting">Cargando...</h1>
-    <small id="user-info" style="color: #888;"></small>
-    <p style="margin-top: 8px;">Monedas: <span id="coins-count">0</span> 🪙</p>
-  </header>
 
-  <!-- MENÚ PRINCIPAL -->
-  <main id="main-menu" class="screen">
-    <!-- WIDGET RECOMPENSA DIARIA -->
-    <div class="daily-card">
-      <h3>🎁 Recompensa Diaria</h3>
-      <p id="streak-text">Racha actual: 0 días</p>
-      <button id="daily-btn" class="btn daily-btn" onclick="claimDailyReward()">
-        Reclamar Recompensa
-      </button>
-      <small id="timer-text" class="timer-text"></small>
-    </div>
-
-    <h2>Selecciona un Juego</h2>
-    <button class="btn" onclick="showGame('memory')">🧠 Juego de Memoria</button>
-    <button class="btn" onclick="showGame('snake')">🐍 Juego de Snake</button>
-    <button id="watch-ad-btn" onclick="showRewardAd()" class="reward-btn">
-      🎬 Ver video para ganar +50 monedas
-    </button>
-  </main>
-
-  <!-- JUEGO DE MEMORIA -->
-  <section id="memory-game" class="screen hidden">
-    <button class="back-btn" onclick="showMenu()">← Volver al Menú</button>
-    <h2>Juego de Memoria</h2>
-    <div id="memory-board" class="memory-board"></div>
-  </section>
-
-  <!-- JUEGO DE SNAKE -->
-  <section id="snake-game" class="screen hidden">
-    <button class="back-btn" onclick="showMenu()">← Volver al Menú</button>
-    <h2>Snake</h2>
-    <canvas id="snake-canvas" width="300" height="300"></canvas>
-    <div class="controls">
-      <button onclick="changeDirection('UP')">⬆️</button>
-      <div>
-        <button onclick="changeDirection('LEFT')">⬅️</button>
-        <button onclick="changeDirection('RIGHT')">➡️</button>
+  <!-- PANTALLA 1: INICIO Y MONEDERO -->
+  <section id="screen-home" class="screen active">
+    <div class="user-profile">
+      <div id="user-avatar" class="avatar">👤</div>
+      <div class="user-info">
+        <h3 id="user-name">Cargando...</h3>
+        <span class="user-tag" id="user-role">Usuario</span>
       </div>
-      <button onclick="changeDirection('DOWN')">⬇️</button>
+    </div>
+
+    <!-- TARJETA DEL MONEDERO -->
+    <div class="wallet-card">
+      <p class="wallet-label">Tu Saldo Total</p>
+      <h1 class="wallet-balance"><span id="coin-balance">0</span> 🪙</h1>
+      <button id="daily-claim-btn" class="btn btn-reward" onclick="claimDailyReward()">
+        🎁 Recompensa Diaria (+100 🪙)
+      </button>
+    </div>
+
+    <!-- HISTORIAL DE MOVIMIENTOS -->
+    <div class="section-container">
+      <h3>📜 Historial de Movimientos</h3>
+      <div id="transactions-list" class="transactions-list">
+        <p class="empty-state">Sin movimientos recientes</p>
+      </div>
     </div>
   </section>
+
+  <!-- PANTALLA 2: JUEGOS -->
+  <section id="screen-games" class="screen">
+    <h2>🎮 Centro de Juegos</h2>
+    <p class="subtitle">Selecciona un juego para competir y ganar más monedas.</p>
+
+    <div class="games-grid">
+      <div class="game-card">
+        <div class="game-icon">🎯</div>
+        <h3>Ruleta de la Suerte</h3>
+        <p>Gira y gana hasta +200 monedas.</p>
+        <button class="btn btn-primary" onclick="openGame('roulette')">Jugar Ahora</button>
+      </div>
+
+      <div class="game-card">
+        <div class="game-icon">🧠</div>
+        <h3>Trivia Express</h3>
+        <p>Responde preguntas y suma saldo.</p>
+        <button class="btn btn-primary" onclick="openGame('trivia')">Jugar Ahora</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PANTALLA 3: VER ANUNCIOS Y GANAR -->
+  <section id="screen-ads" class="screen">
+    <h2>🎬 Gana Monedas</h2>
+    <p class="subtitle">Mira anuncios y completa tareas para sumar a tu saldo.</p>
+
+    <div class="ad-card">
+      <div class="ad-info">
+        <h3>Video Recompensado</h3>
+        <p>Mira un video publicitario completo de 15 a 30 segundos.</p>
+        <span class="badge">+50 Monedas</span>
+      </div>
+      <button id="watch-ad-btn" class="btn btn-action" onclick="showRewardAd()">
+        ▶️ Ver Video
+      </button>
+    </div>
+  </section>
+
+  <!-- PANTALLA 4: PANEL DE ADMINISTRADOR -->
+  <section id="screen-admin" class="screen hidden-role">
+    <div class="admin-header">
+      <h2>⚙️ Panel de Administración</h2>
+      <span class="admin-badge">Solo Admins</span>
+    </div>
+
+    <div class="admin-stats">
+      <div class="stat-box">
+        <span id="stat-total-users">0</span>
+        <label>Usuarios</label>
+      </div>
+      <div class="stat-box">
+        <span id="stat-total-coins">0</span>
+        <label>Monedas Totales</label>
+      </div>
+    </div>
+
+    <h3>👥 Lista de Usuarios y Movimientos</h3>
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID / Usuario</th>
+            <th>Saldo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="admin-users-table">
+          <!-- Se llena dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- NAVEGACIÓN INFERIOR (BOTTOM NAV) -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('screen-home', this)">
+      <span>🏠</span>
+      <label>Inicio</label>
+    </button>
+    <button class="nav-btn" onclick="switchTab('screen-games', this)">
+      <span>🎮</span>
+      <label>Juegos</label>
+    </button>
+    <button class="nav-btn" onclick="switchTab('screen-ads', this)">
+      <span>🎬</span>
+      <label>Anuncios</label>
+    </button>
+    <button id="nav-admin-btn" class="nav-btn hidden-role" onclick="switchTab('screen-admin', this)">
+      <span>⚙️</span>
+      <label>Admin</label>
+    </button>
+  </nav>
 
   <script src="app.js"></script>
 </body>
