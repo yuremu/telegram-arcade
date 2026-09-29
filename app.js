@@ -1,6 +1,6 @@
 // Configuración de la App
 const ADSGRAM_BLOCK_ID = "int-50945"; // Tu Block ID de Adsgram
-const ADMIN_IDS = [123456789, 987654321]; // Agrega aquí tus ID numéricos de Telegram de Admin
+const ADMIN_IDS = [123456789, 630997761]; // Agrega aquí tus ID numéricos de Telegram de Admin
 
 // 🌐 Configuración del Backend en Render
 const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
