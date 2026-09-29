@@ -1,0 +1,46 @@
+/* Limitar ancho para simular pantalla móvil en PC */
+.max-w-md {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Control de pantallas SPA */
+.screen {
+  display: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Ocultar elementos según el rol */
+.hidden-role {
+  display: none !important;
+}
+
+/* Ajustes de la barra de navegación inferior */
+.nav-btn {
+  border: none !important;
+  transition: color 0.15s ease-in-out;
+}
+
+.nav-btn.active {
+  color: var(--bs-primary) !important;
+}
+
+.extra-small {
+  font-size: 0.72rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+/* Espaciado para evitar tapar contenido con la barra fija */
+body {
+  padding-bottom: 75px !important;
+}

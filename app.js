@@ -2,8 +2,19 @@
 const ADSGRAM_BLOCK_ID = "int-50945"; // Tu Block ID de Adsgram
 const ADMIN_IDS = [123456789, 987654321]; // Agrega aquí tus ID numéricos de Telegram de Admin
 
+// 🌐 Configuración del Backend en Render
+const BACKEND_URL = 'https://telegram-arcade-backend.onrender.com';
+
 let currentUser = null;
 let AdControllerInstance = null;
+
+// Variable global para almacenar el estado del jugador
+let player = {
+  id: null,
+  firstName: 'Invitado',
+  username: '',
+  coins: 0
+};
 
 // Inicialización cuando carga Telegram
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,7 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     currentUser = { id: 123456789, first_name: "Dev User" };
   }
-
+	
+  initTelegramUser();
   setupUserInterface();
   initAdsgram();
   loadUserData();
@@ -93,7 +105,7 @@ function claimDailyReward() {
   const btn = document.getElementById('daily-claim-btn');
   btn.disabled = true;
   btn.innerText = "⏳ Reclamado hoy";
-  updateBalance(100, "Recompensa Diaria");
+  updateBalance(50, "Recompensa Diaria");
   alert("🎁 Has reclamado tu recompensa diaria de +100 monedas.");
 }
 
@@ -136,4 +148,91 @@ function openGame(gameType) {
 
 function loadUserData() {
   // Lógica para sincronizar saldo actual con la base de datos backend
+}
+
+/* ==========================================
+   INICIALIZACIÓN Y COMUNICACIÓN CON TELEGRAM Y BACKEND
+   ========================================== */
+
+async function initTelegramUser() {
+  const tg = window.Telegram?.WebApp;
+
+  if (tg) {
+    tg.expand();
+    tg.ready();
+
+    const userData = tg.initDataUnsafe?.user;
+    const initData = tg.initData || '';
+
+    if (userData) {
+      player.id = userData.id;
+      player.firstName = userData.first_name || 'Jugador';
+      player.username = userData.username || '';
+    } else {
+      // Usuario de prueba para desarrollo local en navegador
+      player.id = 999999;
+      player.firstName = 'Jugador Local';
+    }
+
+    document.getElementById('user-greeting').innerText = `¡Hola, ${player.firstName}!`;
+
+    // Sincronizar datos del usuario con el servidor en Render
+    await syncUserWithBackend(initData, userData || { id: player.id, first_name: player.firstName });
+  }
+}
+
+// Sincronizar / Registrar usuario en Render
+async function syncUserWithBackend(initData, user) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/user/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData, user })
+    });
+
+    const data = await response.json();
+
+    if (data.success && data.user) {
+      player.coins = data.user.coins || 0;
+      updateCoinsUI(player.coins);
+      console.log('✅ Usuario sincronizado con Render:', data.user);
+    }
+  } catch (error) {
+    console.error('❌ Error al conectar con el backend en Render:', error);
+  }
+}
+
+// Enviar nuevas monedas ganadas al backend en Render
+async function addCoinsToBackend(amount) {
+  if (!player.id) return;
+
+  // Actualización rápida en la interfaz para mejor UX
+  player.coins += amount;
+  updateCoinsUI(player.coins);
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/user/add-coins`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        telegram_id: player.id,
+        amount: amount
+      })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      player.coins = data.coins;
+      updateCoinsUI(player.coins);
+    }
+  } catch (error) {
+    console.error('❌ Error guardando monedas en el servidor:', error);
+  }
+}
+
+function updateCoinsUI(amount) {
+  const coinsEl = document.getElementById('coins-count');
+  if (coinsEl) {
+    coinsEl.innerText = amount;
+  }
 }
