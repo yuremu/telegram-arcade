@@ -424,3 +424,10 @@ document.addEventListener('DOMContentLoaded', () => {
     checkDailyRewardStatus();
   }, 200);
 });
+
+// Función para acreditar las monedas en frontend o backend
+function addCoins(amount) {
+  // Lógica para actualizar las monedas del usuario
+  addCoinsToBackend(amount);
+  console.log(`+${amount} monedas acreditadas.`);
+}
